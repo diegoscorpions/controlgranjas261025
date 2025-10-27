@@ -1,31 +1,92 @@
-# 🌾 ControlGranjas261025
+# 🐰 ControlGranjas261025
 
-**Sistema de Control Inteligente para Granjas basado en ESP32-S3**
+**Sistema Automático de Alimentación para Conejos basado en ESP32-S3**
 
 | Plataforma Soportada | ESP32-S3 |
 |---------------------|----------|
 | ESP-IDF Version     | v5.3+    |
 | Lenguaje           | C        |
+| Aplicación         | Alimentación Automática de Conejos |
 
 ## 📋 Descripción del Proyecto
 
-ControlGranjas261025 es un sistema de automatización para granjas que utiliza el microcontrolador ESP32-S3 para controlar y monitorear diversos aspectos de una granja de manera inteligente y eficiente.
+ControlGranjas261025 es un sistema automático de alimentación para conejos que utiliza el microcontrolador ESP32-S3 para controlar motores de sinfín que transportan alimento desde tolvas hasta comederos de manera inteligente y segura.
 
-### 🎯 Características Principales
+### 🎯 Funcionalidad Principal
 
-- **Control de Bombas de Agua**: Automatización del sistema de riego
-- **Monitoreo de Sensores**: Lectura de sensores de humedad, temperatura y otros parámetros
-- **Interfaz PCF8574**: Expansión de E/O mediante I2C
-- **Configuración de Pines Flexible**: Sistema configurable de asignación de pines
-- **Control Remoto**: Capacidades de conectividad WiFi integradas
+**Sistema de Alimentación Automática:**
+- **Motores de Sinfín**: Cada salida controla un motor que mueve un sinfín para transportar comida
+- **Transporte de Alimento**: Desplaza la comida desde la tolva hasta el comedero
+- **Control Inteligente**: Sistema de sensores para detectar niveles y condiciones
+- **Seguridad Integrada**: Múltiples sistemas de protección y alarmas
 
-## 🛠️ Hardware Requerido
+### 🔧 Componentes del Sistema
 
+#### **Actuadores:**
+- **Motores de Sinfín**: Transporte automático de alimento desde tolva a comedero
+
+#### **Sensores de Entrada:**
+- **Sensor de Tolva (Acopio)**: Detecta presencia de alimento en la tolva
+- **Sensor Comedero Lleno**: Detecta cuando el comedero está lleno
+- **Sensor de Paleta (Emergencia)**: Alarma por rebase del nivel del comedero
+- **Sensor Térmico**: Protección térmica del sistema
+- **Modo Manual/Automático**: Selección de modo de operación
+
+#### **Sistemas de Seguridad:**
+- **Timeout de 5 minutos**: Para el sistema si no se activa sensor de comedero lleno
+- **Parada por tolva vacía**: El sistema se detiene si no hay material
+- **Parada por emergencia de paleta**: Se detiene si se activa el sensor de paleta
+- **Protección térmica**: Parada automática por salto térmico
+
+## � Lógica de Control del Sistema
+
+### **Ciclo Normal de Alimentación:**
+
+1. **Inicio del Ciclo**: 
+   - Verificación de condiciones iniciales (tolva con material, sin alarmas)
+   - Activación del motor de sinfín correspondiente
+
+2. **Transporte de Alimento**:
+   - El motor mueve el sinfín para transportar comida desde la tolva
+   - Monitoreo continuo de sensores de seguridad
+
+3. **Finalización del Ciclo**:
+   - **Condición Normal**: Se para cuando se activa el sensor de "comedero lleno"
+   - **Timeout**: Se para automáticamente después de 5 minutos si no se llena el comedero
+
+### **Condiciones de Parada de Emergencia:**
+
+| Condición | Sensor | Acción | Alarma |
+|-----------|--------|--------|---------|
+| **Tolva Vacía** | Sensor de Tolva | ⏹️ Parada Inmediata | 🚨 Sí |
+| **Emergencia Paleta** | Sensor de Paleta | ⏹️ Parada Inmediata | 🚨 Sí |
+| **Protección Térmica** | Sensor Térmico | ⏹️ Parada Inmediata | 🚨 Sí |
+| **Timeout 5 min** | Temporizador | ⏹️ Parada Automática | 🚨 Sí |
+| **Comedero Lleno** | Sensor Comedero | ✅ Parada Normal | ❌ No |
+
+### **Modos de Operación:**
+
+- **🔄 Modo Automático**: Funcionamiento autónomo según programación
+- **🕹️ Modo Manual**: Control manual del operador
+
+## �🛠️ Hardware Requerido
+
+### **Componentes Principales:**
 - **ESP32-S3** (placa de desarrollo)
 - **PCF8574** (Expansor de E/O I2C)
-- **Sensores** (humedad, temperatura, etc.)
-- **Relés** para control de bombas y actuadores
-- **Fuente de alimentación** adecuada
+- **Motores de Sinfín** (para transporte de alimento)
+- **Relés de Potencia** (control de motores)
+
+### **Sensores:**
+- **Sensores de Nivel** (tolva y comedero)
+- **Sensor de Paleta** (emergencia por rebase)
+- **Sensor Térmico** (protección térmica)
+- **Selectores Manual/Automático**
+
+### **Sistema de Alimentación:**
+- **Tolvas de Almacenamiento** (con sensores de acopio)
+- **Comederos** (con sensores de nivel)
+- **Sinfines de Transporte** (accionados por motores)
 
 ## 📁 Estructura del Proyecto
 
@@ -90,18 +151,44 @@ idf.py menuconfig
 
 ## 🔧 Configuración de Hardware
 
-### Conexiones PCF8574 (I2C)
+## 📊 Especificaciones Técnicas
 
-| PCF8574 Pin | ESP32-S3 Pin | Función |
-|-------------|--------------|---------|
-| VCC         | 3.3V         | Alimentación |
-| GND         | GND          | Tierra |
-| SDA         | GPIO 8       | Datos I2C |
-| SCL         | GPIO 9       | Reloj I2C |
+### **Entradas del Sistema (Sensores):**
+| Entrada | Función | Tipo | Acción |
+|---------|---------|------|---------|
+| **Tolva** | Detección de material en tolva | Digital | Parada si vacía |
+| **Comedero Lleno** | Nivel óptimo de comedero | Digital | Parada normal |
+| **Emergencia Paleta** | Rebase de nivel crítico | Digital | Parada de emergencia |
+| **Salto Térmico** | Protección térmica | Digital | Parada de emergencia |
+| **Manual** | Selector de modo manual | Digital | Cambio de modo |
+| **Automático** | Selector de modo automático | Digital | Cambio de modo |
 
-### Configuración de Pines GPIO
+### **Salidas del Sistema (Actuadores):**
+| Salida | Función | Tipo | Control |
+|--------|---------|------|---------|
+| **Motor Sinfín 1-N** | Transporte de alimento | Relé/Digital | ON/OFF por comedero |
+| **Alarma Visual** | Indicación de estado/error | Digital | Según condición |
+| **Alarma Sonora** | Notificación de emergencia | Digital | En condiciones de alarma |
 
-Ver archivo: [`documentacion/CONFIGURACION_PINES.md`](documentacion/CONFIGURACION_PINES.md)
+### **Parámetros de Configuración:**
+- **Timeout de Alimentación**: 5 minutos máximo por ciclo
+- **Número de Comederos**: Configurable (1-N salidas)
+- **Frecuencia de Monitoreo**: Tiempo real continuo
+- **Modo por Defecto**: Automático
+
+## 🚨 Sistema de Alarmas
+
+### **Alarmas Críticas (Parada Inmediata):**
+- 🔴 **Tolva Vacía**: Sin material para alimentar
+- 🔴 **Emergencia Paleta**: Rebase crítico del comedero
+- 🔴 **Protección Térmica**: Sobrecalentamiento del sistema
+- 🔴 **Timeout**: Motor funcionando >5 min sin llenar comedero
+
+### **Estados de Operación:**
+- 🟢 **Normal**: Sistema funcionando correctamente
+- 🟡 **Alimentando**: Motor en funcionamiento
+- 🔴 **Alarma**: Condición de emergencia detectada
+- ⚪ **Parado**: Sistema detenido (manual o por alarma)
 
 ## 📚 Documentación
 
@@ -143,11 +230,26 @@ git push
 
 ## 📈 Próximas Funcionalidades
 
-- [ ] Interfaz web para control remoto
-- [ ] Integración con sensores adicionales
-- [ ] Sistema de alertas por WiFi
-- [ ] Base de datos para logging
+### **Fase 1 - Sistema Básico (Actual):**
+- [x] Control de motores de sinfín
+- [x] Monitoreo de sensores de seguridad
+- [x] Sistema de alarmas por emergencias
+- [x] Timeout de protección (5 minutos)
+- [x] Modo manual/automático
+
+### **Fase 2 - Mejoras Planificadas:**
+- [ ] Interfaz web para monitoreo remoto
+- [ ] Programación de horarios de alimentación
+- [ ] Registro histórico de alimentaciones
+- [ ] Notificaciones vía WiFi/SMS
+- [ ] Control multi-granja
+
+### **Fase 3 - Funcionalidades Avanzadas:**
+- [ ] Integración con sensores de peso
+- [ ] Control de raciones por animal
+- [ ] Análisis predictivo de consumo
 - [ ] Aplicación móvil
+- [ ] Integración IoT completa
 
 ## 👨‍💻 Autor
 
@@ -167,4 +269,5 @@ Para soporte técnico y consultas:
 
 ⭐ Si este proyecto te resulta útil, ¡dale una estrella en GitHub!
 
-**Proyecto ControlGranjas261025** - Sistema de Automatización Agrícola con ESP32-S3
+**Proyecto ControlGranjas261025** - Sistema Automático de Alimentación para Conejos con ESP32-S3  
+*Automatización inteligente para granjas cunícolas con seguridad integrada*

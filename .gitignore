@@ -1,0 +1,29 @@
+# Archivos de compilación ESP-IDF
+build/
+sdkconfig.old
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos temporales del sistema
+*~
+.DS_Store
+Thumbs.db
+
+# Archivos de depuración
+*.log
+*.tmp
+
+# Archivos de compilación C
+*.o
+*.a
+*.so
+*.bin
+*.elf
+
+# Directorios de dependencies
+dependencies/
+managed_components/
+
+# Archivos de configuración específicos del usuario
+user_config.h

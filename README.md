@@ -1,53 +1,170 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 | Linux |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | -------- | -------- | -------- | ----- |
+# 🌾 ControlGranjas261025
 
-# Hello World Example
+**Sistema de Control Inteligente para Granjas basado en ESP32-S3**
 
-Starts a FreeRTOS task to print "Hello World".
+| Plataforma Soportada | ESP32-S3 |
+|---------------------|----------|
+| ESP-IDF Version     | v5.3+    |
+| Lenguaje           | C        |
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+## 📋 Descripción del Proyecto
 
-## How to use example
+ControlGranjas261025 es un sistema de automatización para granjas que utiliza el microcontrolador ESP32-S3 para controlar y monitorear diversos aspectos de una granja de manera inteligente y eficiente.
 
-Follow detailed instructions provided specifically for this example.
+### 🎯 Características Principales
 
-Select the instructions depending on Espressif chip installed on your development board:
+- **Control de Bombas de Agua**: Automatización del sistema de riego
+- **Monitoreo de Sensores**: Lectura de sensores de humedad, temperatura y otros parámetros
+- **Interfaz PCF8574**: Expansión de E/O mediante I2C
+- **Configuración de Pines Flexible**: Sistema configurable de asignación de pines
+- **Control Remoto**: Capacidades de conectividad WiFi integradas
 
-- [ESP32 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html)
-- [ESP32-S2 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html)
+## 🛠️ Hardware Requerido
 
+- **ESP32-S3** (placa de desarrollo)
+- **PCF8574** (Expansor de E/O I2C)
+- **Sensores** (humedad, temperatura, etc.)
+- **Relés** para control de bombas y actuadores
+- **Fuente de alimentación** adecuada
 
-## Example folder contents
-
-The project **hello_world** contains one source file in C language [hello_world_main.c](main/hello_world_main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt` files that provide set of directives and instructions describing the project's source files and targets (executable, library, or both).
-
-Below is short explanation of remaining files in the project folder.
+## 📁 Estructura del Proyecto
 
 ```
-├── CMakeLists.txt
-├── pytest_hello_world.py      Python script used for automated testing
-├── main
-│   ├── CMakeLists.txt
-│   └── hello_world_main.c
-└── README.md                  This is the file you are currently reading
+ControlGranjas261025/
+├── CMakeLists.txt                 # Configuración principal de compilación
+├── README.md                      # Este archivo
+├── .gitignore                     # Archivos excluidos del control de versiones
+├── main/                          # Código fuente principal
+│   ├── CMakeLists.txt            # Configuración de compilación del main
+│   ├── main.c                    # Función principal de la aplicación
+│   ├── pcf8574.c                 # Driver para PCF8574
+│   ├── pcf8574.h                 # Header del driver PCF8574
+│   ├── configpines.c             # Configuración de pines GPIO
+│   └── configpines.h             # Header de configuración de pines
+├── documentacion/                 # Documentación del proyecto
+│   ├── CONFIGURACION_PINES.md    # Documentación detallada de pines
+│   └── GIT_GITHUB_INSTRUCCIONES.md # Guía de Git y GitHub
+└── .devcontainer/                # Configuración para VS Code Dev Containers
 ```
 
-For more information on structure and contents of ESP-IDF projects, please refer to Section [Build System](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html) of the ESP-IDF Programming Guide.
+## 🚀 Cómo Compilar y Usar
 
-## Troubleshooting
+### Prerrequisitos
 
-* Program upload failure
+1. **ESP-IDF v5.3 o superior** instalado
+2. **Toolchain** configurado para ESP32-S3
+3. **VS Code** con extensión ESP-IDF (recomendado)
 
-    * Hardware connection is not correct: run `idf.py -p PORT monitor`, and reboot your board to see if there are any output logs.
-    * The baud rate for downloading is too high: lower your baud rate in the `menuconfig` menu, and try again.
+### Configuración del Entorno
 
-## Technical support and feedback
+```bash
+# Configurar ESP-IDF (Windows PowerShell)
+C:\Users\diego\.espressif\esp-adf\esp-idf\export.ps1
 
-Please use the following feedback channels:
+# Verificar configuración
+idf.py --version
+```
 
-* For technical queries, go to the [esp32.com](https://esp32.com/) forum
-* For a feature request or bug report, create a [GitHub issue](https://github.com/espressif/esp-idf/issues)
+### Compilación
 
-We will get back to you as soon as possible.
+```bash
+# Limpiar proyecto (si es necesario)
+idf.py fullclean
+
+# Compilar proyecto
+idf.py build
+
+# Flashear al ESP32-S3
+idf.py flash
+
+# Monitorear salida serial
+idf.py monitor
+```
+
+### Configuración
+
+```bash
+# Abrir configuración del proyecto
+idf.py menuconfig
+```
+
+## 🔧 Configuración de Hardware
+
+### Conexiones PCF8574 (I2C)
+
+| PCF8574 Pin | ESP32-S3 Pin | Función |
+|-------------|--------------|---------|
+| VCC         | 3.3V         | Alimentación |
+| GND         | GND          | Tierra |
+| SDA         | GPIO 8       | Datos I2C |
+| SCL         | GPIO 9       | Reloj I2C |
+
+### Configuración de Pines GPIO
+
+Ver archivo: [`documentacion/CONFIGURACION_PINES.md`](documentacion/CONFIGURACION_PINES.md)
+
+## 📚 Documentación
+
+- **[Configuración de Pines](documentacion/CONFIGURACION_PINES.md)**: Detalles completos de la asignación de pines
+- **[Guía Git/GitHub](documentacion/GIT_GITHUB_INSTRUCCIONES.md)**: Instrucciones para control de versiones
+
+## 🐛 Solución de Problemas
+
+### Error de Compilación
+```bash
+# Limpiar y recompilar
+idf.py fullclean
+idf.py build
+```
+
+### Error de Flasheo
+```bash
+# Verificar puerto y baudrate
+idf.py -p COM3 flash
+
+# Si persiste el error, presionar BOOT en la placa durante el flasheo
+```
+
+### Error de I2C
+- Verificar conexiones SDA/SCL
+- Comprobar pull-ups (4.7kΩ recomendado)
+- Verificar dirección I2C del PCF8574
+
+## 🔄 Control de Versiones
+
+Este proyecto utiliza Git para control de versiones. Ver [`documentacion/GIT_GITHUB_INSTRUCCIONES.md`](documentacion/GIT_GITHUB_INSTRUCCIONES.md) para comandos detallados.
+
+### Workflow básico:
+```bash
+git add .
+git commit -m "Descripción del cambio"
+git push
+```
+
+## 📈 Próximas Funcionalidades
+
+- [ ] Interfaz web para control remoto
+- [ ] Integración con sensores adicionales
+- [ ] Sistema de alertas por WiFi
+- [ ] Base de datos para logging
+- [ ] Aplicación móvil
+
+## 👨‍💻 Autor
+
+**Diego** - Desarrollo y mantenimiento
+
+## 📄 Licencia
+
+Este proyecto es de código abierto. Ver detalles de licencia en el repositorio.
+
+## 🆘 Soporte
+
+Para soporte técnico y consultas:
+- Crear un [Issue en GitHub](https://github.com/diegoscorpions/controlgranjas261025/issues)
+- Revisar la documentación en la carpeta [`documentacion/`](documentacion/)
+
+---
+
+⭐ Si este proyecto te resulta útil, ¡dale una estrella en GitHub!
+
+**Proyecto ControlGranjas261025** - Sistema de Automatización Agrícola con ESP32-S3
